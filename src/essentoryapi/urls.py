@@ -19,7 +19,6 @@ from django.urls import include, path
 import debug_toolbar
 
 admin.site.site_header = "Essentory Admin"
-admin.site.index_title = "Admin"
 
 urlpatterns = [
     # path('', include('core.urls')),
