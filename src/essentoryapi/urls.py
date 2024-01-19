@@ -17,6 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 import debug_toolbar
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 admin.site.site_header = "Essentory Admin"
 
@@ -28,4 +33,16 @@ urlpatterns = [
     # path("media/", include("media.urls")),
     # path("account/", include("account.urls")),
     path("__debug__/", include(debug_toolbar.urls)),
+    # OpenAPI 3 schema generation <drf-spectacular>
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
+    ),
 ]
