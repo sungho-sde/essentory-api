@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_filters",
     "rest_framework",
+    "firebase-admin",
     "rest_framework_simplejwt",
     "drf_spectacular",
     "debug_toolbar",
