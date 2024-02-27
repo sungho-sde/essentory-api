@@ -8,5 +8,5 @@ class AccountsConfig(AppConfig):
     name = "accounts"
 
     def ready(self):
-        cred = credentials.Certificate("path/to/your/firebase-adminsdk.json")
+        cred = credentials.Certificate("../config/firebase_admin_sdk.json")
         firebase_admin.initialize_app(cred)
