@@ -4,8 +4,8 @@
         "builder": "NIXPACKS"
     },
     "deploy": {
-        "startCommand": "cd src && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn mysite.wsgi",
         "restartPolicyType": "ON_FAILURE",
+        "startCommand": "cd src && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn essentoryapi.wsgi:application",
         "restartPolicyMaxRetries": 2
     }
 }
