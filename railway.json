@@ -1,11 +1,12 @@
 {
     "$schema": "https://railway.app/railway.schema.json",
     "build": {
-        "builder": "NIXPACKS"
+        "builder": "NIXPACKS",
+        "command"
     },
     "deploy": {
         "restartPolicyType": "ON_FAILURE",
-        "startCommand": "cd src && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn essentoryapi.wsgi:application",
+        "startCommand": "cd src && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn essentoryapi.wsgi",
         "restartPolicyMaxRetries": 2
     }
 }
