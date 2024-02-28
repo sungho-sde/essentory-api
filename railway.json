@@ -5,7 +5,7 @@
     },
     "deploy": {
         "restartPolicyType": "ON_FAILURE",
-        "startCommand": "cd src && python manage.py migrate && gunicorn essentoryapi.wsgi",
+        "startCommand": "cd src && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn essentoryapi.wsgi",
         "restartPolicyMaxRetries": 2
     }
 }
