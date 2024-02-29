@@ -1,5 +1,5 @@
 # essentory-api
-backend service for Essentory
+Backend Service for Essentory
 
 ## Getting Started
 ```
