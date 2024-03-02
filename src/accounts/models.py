@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    uid = models.CharField(max_length=255, unique=True)
+    uid = models.CharField(max_length=255, unique=True, null=False, blank=False)
     username = models.CharField(max_length=150, unique=True)
     display_name = models.CharField(_("display name"), max_length=50, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

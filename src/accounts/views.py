@@ -1,10 +1,12 @@
-from django.contrib.sessions.models import Session
-from rest_framework import status, viewsets, permissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .models import User, Device
-from .serializers import UserSerializer, DeviceSerializer
 import firebase_admin.auth as firebase_auth
+from django.contrib.sessions.models import Session
+from django.core.exceptions import ValidationError
+from rest_framework import permissions, status, viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .models import Device, User
+from .serializers import DeviceSerializer, UserSerializer
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -32,9 +34,8 @@ class FirebaseSignupView(APIView):
                     {"error": "User with the same email already exists"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
             user_data = {
-                "uid": uid,
+                "uid": firebase_user.uid,
                 "email": firebase_user.email,
                 "username": request.data.get(
                     "username", firebase_user.email.split("@")[0]

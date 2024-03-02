@@ -22,10 +22,6 @@ class UserSerializer(serializers.ModelSerializer):
             "profile_picture_url": {"required": False, "allow_blank": True},
         }
 
-        read_only_fields = [
-            "uid",
-        ]  # Fields that should not be updated directly
-
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
