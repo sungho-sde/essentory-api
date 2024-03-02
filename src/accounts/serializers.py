@@ -5,21 +5,30 @@ from yaml import serialize
 from .models import User, Device
 
 
-class AccountSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        # Specify the fields you want to include in your serializer
-        # Typically, you'll exclude sensitive fields like 'password'
         fields = [
-            "id",
+            "uid",
+            "username",
+            "display_name",
             "email",
+            "profile_picture_url",
+            "status",
+            "created_at",
         ]
+        extra_kwargs = {
+            "display_name": {"required": False, "allow_blank": True},
+            "profile_picture_url": {"required": False, "allow_blank": True},
+        }
+
         read_only_fields = [
-            "id",
+            "uid",
         ]  # Fields that should not be updated directly
 
-    class UserLoginSerilizer(serializers.Serializer):
-        uid = serializers.CharField(max_length=255)
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
 
 
 class DeviceSerializer(serializers.ModelSerializer):

@@ -3,13 +3,13 @@ from rest_framework import status, viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import User, Device
-from .serializers import AccountSerializer, DeviceSerializer
+from .serializers import UserSerializer, DeviceSerializer
 import firebase_admin.auth as firebase_auth
 
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = AccountSerializer
+    serializer_class = UserSerializer
 
 
 class FirebaseSignupView(APIView):
@@ -33,17 +33,24 @@ class FirebaseSignupView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            user = User.objects.create(
-                email=firebase_user.email,
-                uid=uid,
-            )
+            user_data = {
+                "uid": uid,
+                "email": firebase_user.email,
+                "username": request.data.get(
+                    "username", firebase_user.email.split("@")[0]
+                ),  # Default username to part of email if not provided
+            }
 
+            serializer = UserSerializer(data=user_data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except firebase_auth.FirebaseError as e:
             return Response(
-                AccountSerializer(user).data, status=status.HTTP_201_CREATED
-            )
-        except firebase_auth.FirebaseError:
-            return Response(
-                {"error": "Invalid Firebase UID"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Invalid Firebase UID or Firebase Error: " + str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
 
@@ -65,7 +72,7 @@ class FirebaseLoginView(APIView):
             firebase_user = firebase_auth.get_user(uid)
             user = User.objects.get(uid=firebase_user.uid)
 
-            response_data = {"user": AccountSerializer(user).data}
+            response_data = {"user": UserSerializer(user).data}
 
             # Only proceed with device handling if device_id is provided
             if device_id:
