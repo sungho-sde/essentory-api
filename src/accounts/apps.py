@@ -15,7 +15,7 @@ decoded_json = base64.b64decode(encoded_json)
 firebase_admin_sdk_json = json.loads(decoded_json)
 
 
-class AccountsConfig(AppConfig):
+class FirebaseAccountsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "accounts"
 

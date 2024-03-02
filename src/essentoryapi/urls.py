@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import include, path
 import debug_toolbar
@@ -31,7 +32,7 @@ urlpatterns = [
     # path("channel/", include("channel.urls")),
     path("posts/", include("posts.urls")),
     # path("media/", include("media.urls")),
-    # path("account/", include("account.urls")),
+    path("accounts/", include("accounts.urls")),
     path("__debug__/", include(debug_toolbar.urls)),
     # OpenAPI 3 schema generation <drf-spectacular>
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
