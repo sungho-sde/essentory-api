@@ -167,3 +167,35 @@ class PushTokenUpdateView(APIView):
             return Response(
                 {"error": "Device not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+class CheckDuplicateUsernameView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        username = request.query_params.get("username")
+        if not username:
+            return Response(
+                {"error": "Username parameter is missing."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # try:
+        #     # Validate username
+        #     User.objects.validate_username(username)
+        # except ValidationError as e:
+        #     return Response(
+        #         {"valid": False, "error": str(e)}, status=status.HTTP_200_OK
+        #     )
+
+        exists = User.objects.filter(username=username).exists()
+        if exists:
+            return Response(
+                {"valid": False, "error": "This username is already taken."},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"valid": True, "message": "This username is available."},
+                status=status.HTTP_200_OK,
+            )
