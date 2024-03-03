@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
 from .models import Device, User
 from .serializers import (
@@ -220,6 +221,18 @@ class CheckDuplicateUsernameView(APIView):
     def get_serializer(self, *args, **kwargs):
         return UsernameQuerySerializer(*args, **kwargs)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='username',
+                description='Username to check for duplicates',
+                required=True,
+                type=str,
+                location=OpenApiParameter.QUERY
+            )
+        ],
+        responses={200: OpenApiResponse(description='Description of the response')}
+    )
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
