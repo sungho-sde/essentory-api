@@ -10,7 +10,7 @@ class User(AbstractUser):
         ('Suspended', 'Suspended'),
     ]
 
-    uid = models.CharField(max_length=255, unique=True, null=False, blank=False)
+    uid = models.CharField(primary_key=True, max_length=255, unique=True, null=False, blank=False)
     username = models.CharField(max_length=150, unique=True)
     display_name = models.CharField(_("display name"), max_length=50, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
