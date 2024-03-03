@@ -13,6 +13,7 @@ from .serializers import (
     FirebaseSignupRequestSerializer,
     UserSerializer,
     UsernameQuerySerializer,
+    EmailVerificationStatusSerializer,
 )
 
 
@@ -249,3 +250,20 @@ class CheckDuplicateUsernameView(APIView):
                 {"valid": True, "message": "This username is available."},
                 status=status.HTTP_200_OK,
             )
+
+
+class CheckEmailVerificationView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, uid):
+        try:
+            user = firebase_auth.get_user(uid)
+            data = {
+                "uid": uid,
+                "email_verified": user.email_verified
+            }
+            serializer = EmailVerificationStatusSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data)
+        except firebase_auth.UserNotFoundError as e:
+            return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)

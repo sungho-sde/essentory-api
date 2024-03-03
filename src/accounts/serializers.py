@@ -46,6 +46,11 @@ class UsernameQuerySerializer(serializers.Serializer):
     )
 
 
+class EmailVerificationStatusSerializer(serializers.Serializer):
+    uid = serializers.CharField(max_length=128)
+    email_verified = serializers.BooleanField()
+
+
 class DeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Device
