@@ -4,22 +4,39 @@ from django.core.exceptions import ValidationError
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.decorators import action
 
 from .models import Device, User
-from .serializers import DeviceSerializer, UserSerializer
+from .serializers import (
+    DeviceSerializer,
+    FirebaseLoginRequestSerializer,
+    FirebaseSignoutRequestSerializer,
+    FirebaseSignupRequestSerializer,
+    UserSerializer,
+    UsernameQuerySerializer,
+)
 
 
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_field = 'uid'
+    lookup_field = "uid"
+
 
 class FirebaseSignupView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    def get_serializer(self, *args, **kwargs):
+        return FirebaseSignupRequestSerializer(*args, **kwargs)
+
     def post(self, request, *args, **kwargs):
-        uid = request.data.get("uid")
+        request_serializer = FirebaseSignupRequestSerializer(data=request.data)
+
+        if request_serializer.is_valid():
+            uid = request_serializer.validated_data.get("uid")
+        else:
+            return Response(
+                request_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         if not uid:
             return Response(
@@ -59,7 +76,19 @@ class FirebaseSignupView(APIView):
 class FirebaseLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    def get_serializer(self, *args, **kwargs):
+        return FirebaseLoginRequestSerializer(*args, **kwargs)
+
     def post(self, request, *args, **kwargs):
+        request_serializer = FirebaseLoginRequestSerializer(data=request.data)
+
+        if request_serializer.is_valid():
+            uid = request_serializer.validated_data.get("uid")
+        else:
+            return Response(
+                request_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
         uid = request.data.get("uid")
         device_id = request.data.get("device_id", None)  # Optional
         push_token = request.data.get("push_token", None)  # Optional
@@ -106,9 +135,23 @@ class FirebaseLoginView(APIView):
 
 
 class FirebaseSignoutView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get_serializer(self, *args, **kwargs):
+        return FirebaseSignoutRequestSerializer(*args, **kwargs)
+
     def post(self, request, *args, **kwargs):
-        uid = request.data.get("uid")
-        device_id = request.data.get("device_id", None)  # Device ID is optional
+        request_serializer = FirebaseSignoutRequestSerializer(data=request.data)
+
+        if request_serializer.is_valid():
+            uid = request_serializer.validated_data.get("uid")
+            device_id = request_serializer.validated_data.get(
+                "device_id", None
+            )  # Device ID is optional
+        else:
+            return Response(
+                request_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         if not uid:
             return Response(
@@ -173,8 +216,14 @@ class PushTokenUpdateView(APIView):
 class CheckDuplicateUsernameView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    def get_serializer(self, *args, **kwargs):
+        return UsernameQuerySerializer(*args, **kwargs)
+
     def get(self, request, *args, **kwargs):
-        username = request.query_params.get("username")
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get("username")
+
         if not username:
             return Response(
                 {"error": "Username parameter is missing."},

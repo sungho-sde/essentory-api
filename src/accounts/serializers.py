@@ -1,7 +1,4 @@
 from rest_framework import serializers
-from yaml import serialize
-
-# from posts import serializers
 from .models import User, Device
 
 
@@ -25,6 +22,28 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+
+
+class FirebaseSignupRequestSerializer(serializers.Serializer):
+    uid = serializers.CharField(required=True)
+    username = serializers.CharField(required=False)
+
+
+class FirebaseLoginRequestSerializer(serializers.Serializer):
+    uid = serializers.CharField(required=True)
+    device_id = serializers.CharField(required=False, allow_blank=True)
+    push_token = serializers.CharField(required=False, allow_blank=True)
+
+
+class FirebaseSignoutRequestSerializer(serializers.Serializer):
+    uid = serializers.CharField(required=True)
+    device_id = serializers.CharField(required=False, allow_blank=True)
+
+
+class UsernameQuerySerializer(serializers.Serializer):
+    username = serializers.CharField(
+        help_text="Username duplicate check for availability"
+    )
 
 
 class DeviceSerializer(serializers.ModelSerializer):
