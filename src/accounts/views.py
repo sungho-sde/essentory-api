@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 
 from .models import Device, User
 from .serializers import DeviceSerializer, UserSerializer
@@ -12,7 +13,7 @@ from .serializers import DeviceSerializer, UserSerializer
 class AccountViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
+    lookup_field = 'uid'
 
 class FirebaseSignupView(APIView):
     permission_classes = [permissions.AllowAny]
