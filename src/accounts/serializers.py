@@ -26,7 +26,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class FirebaseSignupRequestSerializer(serializers.Serializer):
     uid = serializers.CharField(required=True)
-    username = serializers.CharField(required=False)
+    username = serializers.CharField(required=True)
+    display_name = serializers.CharField(required=True)
 
 
 class FirebaseLoginRequestSerializer(serializers.Serializer):
