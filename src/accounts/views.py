@@ -1,20 +1,21 @@
 import firebase_admin.auth as firebase_auth
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ValidationError
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from firebase_admin.exceptions import FirebaseError
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 
 from .models import Device, User
 from .serializers import (
     DeviceSerializer,
+    EmailVerificationStatusSerializer,
     FirebaseLoginRequestSerializer,
     FirebaseSignoutRequestSerializer,
     FirebaseSignupRequestSerializer,
-    UserSerializer,
     UsernameQuerySerializer,
-    EmailVerificationStatusSerializer,
+    UserSerializer,
 )
 
 
@@ -68,7 +69,7 @@ class FirebaseSignupView(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except firebase_auth.FirebaseError as e:
+        except FirebaseError as e:
             return Response(
                 {"error": "Invalid Firebase UID or Firebase Error: " + str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -130,7 +131,7 @@ class FirebaseLoginView(APIView):
             return Response(
                 {"error": "User does not exist"}, status=status.HTTP_404_NOT_FOUND
             )
-        except firebase_auth.FirebaseError:
+        except FirebaseError:
             return Response(
                 {"error": "Invalid Firebase UID"}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -224,14 +225,14 @@ class CheckDuplicateUsernameView(APIView):
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                name='username',
-                description='Username to check for duplicates',
+                name="username",
+                description="Username to check for duplicates",
                 required=True,
                 type=str,
-                location=OpenApiParameter.QUERY
+                location=OpenApiParameter.QUERY,
             )
         ],
-        responses={200: OpenApiResponse(description='Description of the response')}
+        responses={200: OpenApiResponse(description="Description of the response")},
     )
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.query_params)
@@ -271,12 +272,9 @@ class CheckEmailVerificationView(APIView):
     def get(self, request, uid):
         try:
             user = firebase_auth.get_user(uid)
-            data = {
-                "uid": uid,
-                "email_verified": user.email_verified
-            }
+            data = {"uid": uid, "email_verified": user.email_verified}
             serializer = EmailVerificationStatusSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             return Response(serializer.data)
         except firebase_auth.UserNotFoundError as e:
-            return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": str(e)}, status=status.HTTP_404_NOT_FOUND)
