@@ -29,7 +29,7 @@ admin.site.site_header = "Essentory Admin"
 urlpatterns = [
     # path('', include('core.urls')),
     path("admin/", admin.site.urls),
-    # path("channel/", include("channel.urls")),
+    path("channels/", include("channels.urls")),
     path("posts/", include("posts.urls")),
     # path("media/", include("media.urls")),
     path("accounts/", include("accounts.urls")),

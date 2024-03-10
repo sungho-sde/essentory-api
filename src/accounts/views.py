@@ -269,6 +269,9 @@ class CheckDuplicateUsernameView(APIView):
 class CheckEmailVerificationView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    def get_serializer_class(self):
+        return EmailVerificationStatusSerializer
+
     def get(self, request, uid):
         try:
             user = firebase_auth.get_user(uid)
