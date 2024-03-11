@@ -14,6 +14,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     display_name = models.CharField(_("display name"), max_length=50, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Active')
     profile_picture_url = models.URLField(max_length=200, blank=True, null=True)
 
