@@ -12,6 +12,8 @@ class ChannelMember(models.Model):
     channel_id = models.ForeignKey("Channel", on_delete=models.CASCADE, related_name="channel_members")
     uid = models.ForeignKey(User, on_delete=models.CASCADE)
     is_owner = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Channel(models.Model):
     # TODO: Confirm with Paul and Antonio for Category set
@@ -64,4 +66,5 @@ class Channel(models.Model):
     profile_picture_url = models.URLField(max_length=200, blank=True, null=True)
     cover_picture_url = models.URLField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     links = models.ManyToManyField(Link, blank=True)

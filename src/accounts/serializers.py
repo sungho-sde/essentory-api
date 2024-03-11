@@ -13,6 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
             "profile_picture_url",
             "status",
             "created_at",
+            "updated_at"
         ]
         extra_kwargs = {
             "display_name": {"required": False, "allow_blank": True},
