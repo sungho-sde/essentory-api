@@ -3,9 +3,15 @@ from .models import Channel, ChannelMember, Link
 from posts.models import Post
 
 
+class LinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Link
+        fields = ('display_name', 'url')
+
+
 class ChannelSerializer(serializers.ModelSerializer):
     creators = serializers.PrimaryKeyRelatedField(queryset=ChannelMember.objects.all(), many=True)
-    links = serializers.PrimaryKeyRelatedField(queryset=Link.objects.all(), many=True)
+    links = LinkSerializer(many=True, read_only=True)
 
     class Meta:
         model = Channel
