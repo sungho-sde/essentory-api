@@ -17,6 +17,8 @@ psycopg2-binary = "*"
 python-dotenv = "*"
 gunicorn = "*"
 whitenoise = "*"
+boto3 = "*"
+shortuuid = "*"
 
 [dev-packages]
 

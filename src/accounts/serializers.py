@@ -6,6 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "uid",
             "username",
             "display_name",
@@ -13,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
             "profile_picture_url",
             "status",
             "created_at",
-            "updated_at"
+            "updated_at",
         ]
         extra_kwargs = {
             "display_name": {"required": False, "allow_blank": True},
