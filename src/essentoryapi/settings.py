@@ -12,7 +12,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
+
+import boto3
+from botocore.exceptions import NoCredentialsError
 from django.core.exceptions import ImproperlyConfigured
+
 from .utils import get_env_variable
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -129,6 +133,26 @@ USE_I18N = True
 
 USE_TZ = True
 
+AWS_ACCESS_KEY_ID = get_env_variable("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = get_env_variable("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_ORIGINAL_BUCKET_NAME = "essentory-original-media"
+AWS_STORAGE_BUCKET_NAME = "essentory-media"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_ORIGINAL_BUCKET_NAME}.s3.amazonaws.com"
+
+S3_RESOURCE = boto3.resource(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    region_name="ap-northeast-2",  # ap-northeast-2 (korea)
+)
+
+try:
+    S3_RESOURCE.meta.client.head_bucket(Bucket=AWS_STORAGE_ORIGINAL_BUCKET_NAME)
+    S3_RESOURCE.meta.client.head_bucket(Bucket=AWS_STORAGE_BUCKET_NAME)
+except NoCredentialsError:
+    print("Credentials not available")
+
+MAX_UPLOAD_FILES = 5
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -164,4 +188,5 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "api spec",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
 }
