@@ -135,9 +135,8 @@ USE_TZ = True
 
 AWS_ACCESS_KEY_ID = get_env_variable("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = get_env_variable("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_ORIGINAL_BUCKET_NAME = "essentory-original-media"
 AWS_STORAGE_BUCKET_NAME = "essentory-media"
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_ORIGINAL_BUCKET_NAME}.s3.amazonaws.com"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 
 S3_RESOURCE = boto3.resource(
     "s3",
@@ -147,7 +146,6 @@ S3_RESOURCE = boto3.resource(
 )
 
 try:
-    S3_RESOURCE.meta.client.head_bucket(Bucket=AWS_STORAGE_ORIGINAL_BUCKET_NAME)
     S3_RESOURCE.meta.client.head_bucket(Bucket=AWS_STORAGE_BUCKET_NAME)
 except NoCredentialsError:
     print("Credentials not available")
